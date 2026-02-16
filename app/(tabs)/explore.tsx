@@ -1,12 +1,12 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import { ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const explore = () => {
+const Explore = () => {
   return (
-    <View>
-      <Text>explore</Text>
-    </View>
-  )
-}
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView></ScrollView>
+    </SafeAreaView>
+  );
+};
 
-export default explore
+export default Explore;

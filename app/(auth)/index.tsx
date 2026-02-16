@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { Alert, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function AuthIndex() {
+export default function SignIn() {
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -13,7 +13,6 @@ export default function AuthIndex() {
       const response = await login();
 
       if (response) {
-        // 🚀 GO TO TABS LAYOUT
         router.replace("/(tabs)");
       } else {
         Alert.alert("Login Failed");

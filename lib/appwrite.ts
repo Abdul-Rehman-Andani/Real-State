@@ -1,13 +1,14 @@
+import { Property } from "@/types";
 import * as Linking from "expo-linking";
 import { openAuthSessionAsync } from "expo-web-browser";
 import {
-    Account,
-    Avatars,
-    Client,
-    Databases,
-    OAuthProvider,
-    Query,
-    Storage
+  Account,
+  Avatars,
+  Client,
+  Databases,
+  OAuthProvider,
+  Query,
+  Storage
 } from "react-native-appwrite";
 
 export const config = {
@@ -81,11 +82,11 @@ export async function getCurrentUser() {
   try {
     const result = await account.get();
     if (result.$id) {
-      const userAvatar = avatar.getInitials(result.name);
+      const userAvatar = avatar.getInitials(result.name).toString();
 
       return {
         ...result,
-        avatar: userAvatar.toString(),
+        avatar: userAvatar
       };
     }
 
@@ -104,7 +105,7 @@ export async function getLatestProperties() {
       [Query.orderAsc("$createdAt"), Query.limit(5)]
     );
 
-    return result.documents;
+    return result.documents as unknown as Property[];
   } catch (error) {
     console.error(error);
     return [];
@@ -123,19 +124,24 @@ export async function getProperties({
   try {
     const buildQuery = [Query.orderDesc("$createdAt")];
 
-    if (filter && filter !== "All")
+    // Filtering
+    if (filter && filter !== "All") {
       buildQuery.push(Query.equal("type", filter));
+    }
 
-    if (query)
+    // Search (only on text fields)
+    if (query.trim() !== "") {
       buildQuery.push(
         Query.or([
           Query.search("name", query),
           Query.search("address", query),
-          Query.search("type", query),
         ])
       );
+    }
 
-    if (limit) buildQuery.push(Query.limit(limit));
+    if (limit) {
+      buildQuery.push(Query.limit(limit));
+    }
 
     const result = await databases.listDocuments(
       config.databaseId!,
@@ -143,12 +149,13 @@ export async function getProperties({
       buildQuery
     );
 
-    return result.documents;
+    return result.documents as unknown as Property[];
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching properties:", error);
     return [];
   }
 }
+
 
 // write function to get property by id
 export async function getPropertyById({ id }: { id: string }) {
